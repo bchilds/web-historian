@@ -63,7 +63,7 @@ exports.isUrlArchived = function(url, callback) {
 exports.downloadUrls = function(urls) {
   //takes in a URL array
   for (var url of urls) {
-    request(url, (err, response, body) => {
+    request('http://' + url, (err, response, body) => {
       fs.writeFile(exports.paths.archivedSites + '/' + url, body);
     });
   }
