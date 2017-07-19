@@ -25,7 +25,7 @@ describe('server', function() {
     });
   });
 
-  xdescribe('archived websites', function () {
+  describe('archived websites', function () {
     describe('GET', function () {
       it('should return the content of a website from the archive', function (done) {
         var fixtureName = 'www.google.com';
@@ -61,7 +61,7 @@ describe('server', function() {
 
         request
           .post('/')
-          .type('form')
+          .type('JSON')
           .send({ url: url })
           .expect(302, function (err) {
             if (!err) {

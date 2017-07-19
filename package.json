@@ -20,7 +20,7 @@
     "bluebird": "^3.3.4",
     "cron": "^1.1.0",
     "nodemon": "^1.11.0",
-    "request": "^2.70.0",
+    "request": "^2.81.0",
     "underscore": "^1.8.3"
   },
   "devDependencies": {
