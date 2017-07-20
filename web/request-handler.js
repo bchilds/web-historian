@@ -7,10 +7,6 @@ var htmlFetcher = require('../workers/htmlfetcher.js');
 
 // reading and displaying index.html if path is just '/'
 
-
-
-
-
 // INDEX PAGE ----->
 
 var readIndex = (req, res) => {
@@ -20,7 +16,19 @@ var readIndex = (req, res) => {
     if (err) {
       throw err;
     }
-    
+
+    res.end(data);
+  } );
+};
+
+var readLoading = (req, res) => {
+  //console.log('--------->  ' + archive.paths.siteAssets + '/index.html');
+  fs.readFile(archive.paths.siteAssets + '/loading.html', 'utf8', function(err, data) {
+    // console.log('data------->', data);
+    if (err) {
+      throw err;
+    }
+    data = JSON.stringify(data);
     res.end(data);
   } );
 };
@@ -32,7 +40,9 @@ var handleResponse = (statusCode, res, data) => {
   
   res.writeHead(statusCode, httpHelpers.headers);
   if (data) { 
-    res.end(data); 
+    //res.write(data); 
+    data = JSON.stringify(data);
+    res.end(data);
   } else {
     res.end();
   }
@@ -54,18 +64,22 @@ var submitSite = (req, res) => {
     var data = JSON.parse(body);
     
     //first, is the url archived?
-    //exports.isUrlArchived = function(url, callback) {
+    // exports.isUrlArchived = function(url, callback) {
     archive.isUrlArchived(data, (isArchived) => {
       //if yes, display that page
       if (isArchived) {
-        //I don't know how to display a page yet
+        
+        req.url = req.url + data;
+        exports.handleRequest(req, res);
       } else {
       //if no,
         //is the url in our list?
         archive.isUrlInList(data, (isInList) =>{
         //if yes, display loading
           if (isInList) {
-            //display loading to screen            
+            //display loading to screen
+            
+            readLoading(req, res);            
           } else {
             //if no, do below
             //this is the "is not archived, not in list"
@@ -98,7 +112,10 @@ var routes = {
 
 
 exports.handleRequest = function (req, res) {
-  //console.log('----------->   ', req);
+  // console.log('----------->   ', req.url);
+  // req.url = req.url + 'www.google.com';
+  // console.log('----------->   ', req.url);
+  
   if (routes[req.url]) { 
     routes[req.url](req, res);
     // htmlFetcher.fetcher();

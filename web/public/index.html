@@ -2,11 +2,43 @@
 <html>
 <head>
   <link rel="stylesheet" type="text/css" href="styles.css" />
+  <script
+  src="https://code.jquery.com/jquery-3.2.1.min.js"
+  integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+  crossorigin="anonymous">
+  </script>
 </head>
 <body>
   Enter a URL here:
-  <form method="POST">
-    <input type="input" name="url"></input>
+  <form id="inputForm">
+    <input id='url' type="input" name="url"></input>
   </form>
 </body>
+
+<script>
+  $(document).ready(function() {
+    $('#inputForm').submit( function(event) {
+      event.preventDefault();
+      
+      var url = JSON.stringify($('#url').val());
+      var posting = $.ajax({
+        type: 'POST',
+        url: 'http://127.0.0.1:8080/',
+        dataType: 'json',
+        data: url, 
+        success: (response) => {
+          console.log('SUCCESS!!!', response);
+        },
+        error: (err) => {
+          console.log('ERROR :(', err);
+        },
+      });
+      posting.done( (data) => {
+        $('body').html(data);
+      });
+      $('#url').val(''); 
+      
+    });
+  });
+</script>
 </html>
