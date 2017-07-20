@@ -2,6 +2,7 @@ var path = require('path');
 var fs = require('fs');
 var archive = require('../helpers/archive-helpers');
 var httpHelpers = require('./http-helpers');
+var htmlFetcher = require('../workers/htmlfetcher.js');
 // require more modules/folders here!
 
 // reading and displaying index.html if path is just '/'
@@ -51,12 +52,31 @@ var submitSite = (req, res) => {
   req.on('end', function() {
     // this takes JSON, not form data. Account for l8R
     var data = JSON.parse(body);
-    archive.addUrlToList(data.url, () => { 
-      handleResponse(302, res);
+    
+    //first, is the url archived?
+    //exports.isUrlArchived = function(url, callback) {
+    archive.isUrlArchived(data, (isArchived) => {
+      //if yes, display that page
+      if (isArchived) {
+        //I don't know how to display a page yet
+      } else {
+      //if no,
+        //is the url in our list?
+        archive.isUrlInList(data, (isInList) =>{
+        //if yes, display loading
+          if (isInList) {
+            //display loading to screen            
+          } else {
+            //if no, do below
+            //this is the "is not archived, not in list"
+            archive.addUrlToList(data.url, () => { 
+              handleResponse(302, res);
+            }); 
+          }
+        });
+      }
     }); 
   });
-  
-  
 };
 
 
@@ -80,9 +100,9 @@ var routes = {
 exports.handleRequest = function (req, res) {
   //console.log('----------->   ', req);
   if (routes[req.url]) { 
-    routes[req.url](req, res); //----------> modify this slightly
+    routes[req.url](req, res);
+    // htmlFetcher.fetcher();
   } else {
-    console.log(req.url);
     var url = req.url.substring(1);
     archive.isUrlArchived(url, (urlPresent) => {
       //if urlPresent is true...
